@@ -12,7 +12,7 @@ public actor APIClient {
     internal let session : URLSession
     internal let interceptor : APIClientInterceptor
     internal let httpProtocol : HTTPProtocol
-    internal let serializer: Serializer
+    internal let serializer: Serializer?
     
     public init(
         host: String,
