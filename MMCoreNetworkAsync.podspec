@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "MMCoreNetworkAsync"
-  spec.version      = "0.0.1"
+  spec.version      = "0.0.2"
   spec.summary      = "Network layer used by metro team (async)"
   spec.swift_version = '5.0'
 
