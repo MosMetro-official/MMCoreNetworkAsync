@@ -12,22 +12,25 @@ public actor APIClient {
     internal let session : URLSession
     internal let interceptor : APIClientInterceptor
     internal let httpProtocol : HTTPProtocol
+    internal let serializer: Serializer
     
     public init(
         host: String,
         interceptor: APIClientInterceptor? = nil,
         httpProtocol: HTTPProtocol = .HTTPS,
-        configuration: URLSessionConfiguration = .default
+        configuration: URLSessionConfiguration = .default,
+        serializer: Serializer? = nil
     ) {
         self.host = host
         self.session = URLSession(configuration: configuration)
         self.interceptor = interceptor ?? DefaultAPIClientInterceptor()
         self.httpProtocol = httpProtocol
+        self.serializer = serializer
     }
     
     public func send(_ request: Request, debug: Bool = false) async throws -> Response  {
         let url = try makeURL(path: request.path, query: request.query)
-        var urlRequest = try await request.makeURLRequest(url: url, serializer: nil)
+        var urlRequest = try await request.makeURLRequest(url: url, serializer: self.serializer)
 #if DEBUG
         if debug {
             print("🚧🚧🚧 MAKING URL REQUEST:\n\(urlRequest.url?.absoluteString ?? "empty URL")\n")
