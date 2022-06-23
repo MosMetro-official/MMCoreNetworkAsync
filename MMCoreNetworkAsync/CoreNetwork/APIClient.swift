@@ -27,7 +27,7 @@ public actor APIClient {
     
     public func send(_ request: Request, debug: Bool = false) async throws -> Response  {
         let url = try makeURL(path: request.path, query: request.query)
-        var urlRequest = try makeRequest(url: url, method: request.method.rawValue, body: request.body, contentType: request.contentType)
+        var urlRequest = try await request.makeURLRequest(url: url, serializer: nil)
 #if DEBUG
         if debug {
             print("🚧🚧🚧 MAKING URL REQUEST:\n\(urlRequest.url?.absoluteString ?? "empty URL")\n")
@@ -89,32 +89,4 @@ extension APIClient {
         return url
     }
     
-    private func makeRequest(url: URL, method: String, body: [String: Any]?, contentType: HTTPContentType) throws -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = method
-        if let body = body {
-            request.setValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
-            switch contentType {
-            case .json:
-                request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
-                
-            case .formData:
-                break
-                
-            case .urlEncoded:
-                let postString = body.queryString
-                let str = postString
-                    .replacingOccurrences(of: "[", with: "{")
-                    .replacingOccurrences(of: "]", with: "}")
-                request.httpBody = str.data(using: .utf8)
-                
-            case .other:
-                break
-            }
-            #if DEBUG
-            print("🔔 REQUEST BODY\n\n\(request.httpBody as Any))\n")
-            #endif
-        }
-        return request
-    }
 }
