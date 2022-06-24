@@ -13,6 +13,7 @@ public actor APIClient {
     internal let interceptor : APIClientInterceptor
     internal let httpProtocol : HTTPProtocol
     internal let serializer: Serializer?
+    public var debug = false
     
     public init(
         host: String,
@@ -28,14 +29,29 @@ public actor APIClient {
         self.serializer = serializer
     }
     
-    public func send(_ request: Request, debug: Bool = false) async throws -> Response  {
+    @discardableResult
+    public func send(_ request: Request) async throws -> Response<Void>  {
+        let (data,statusCode) = try await self.actualSend(request)
+        return Response(value: (), data: data, success: true, statusCode: statusCode)
+    }
+    
+    @discardableResult
+    public func send<T: Decodable>(_ request: Request) async throws -> Response<T>  {
+        let (data,statusCode) = try await self.actualSend(request)
+        guard let serializer = serializer else {
+            throw APIError.badMapping
+        }
+
+        let decoded: T = try await serializer.decode(data)
+        return Response(value: decoded, data: data, success: true, statusCode: statusCode)
+    }
+    
+    private func actualSend(_ request: Request) async throws -> (data: Data, statusCode: Int) {
         let url = try makeURL(path: request.path, query: request.query)
-        var urlRequest = try await request.makeURLRequest(url: url, serializer: self.serializer)
-#if DEBUG
+        var urlRequest = try await makeURLRequest(url: url, request: request)
         if debug {
             print("🚧🚧🚧 MAKING URL REQUEST:\n\(urlRequest.url?.absoluteString ?? "empty URL")\n")
         }
-#endif
         interceptor.client(self, willSendRequest: &urlRequest)
         print("CORENETWORK: started network call")
         
@@ -52,7 +68,7 @@ public actor APIClient {
             switch retryPolicy {
             case .shouldRetry:
                 print("CORENETWORK: Retrying request \(request.path)")
-                let resendedResponse = try await self.send(request)
+                let resendedResponse = try await self.actualSend(request)
                 return resendedResponse
             case .doNotRetry:
                 print("CORENETWORK: Request marked as do not retry")
@@ -61,14 +77,34 @@ public actor APIClient {
                 throw retryError
             }
         } else {
-            return Response(data: data, success: true, statusCode: httpResponse.statusCode)
+            return (data: data, statusCode: httpResponse.statusCode)
         }
-        
-        
     }
 }
 
 extension APIClient {
+    
+    public func makeURLRequest(url: URL, request: Request) async throws -> URLRequest {
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = request.method.rawValue
+        if let body = request.body {
+            urlRequest.setValue(request.contentType.rawValue, forHTTPHeaderField: "Content-Type")
+            switch request.contentType {
+            case .json:
+                let encodedData = try await serializer?.encode(body)
+                urlRequest.httpBody = encodedData
+            case .formData:
+                break
+            case .urlEncoded:
+                let encoder = URLEncodedFormEncoder()
+                let data: Data? = try? encoder.encode(body)
+                urlRequest.httpBody = data
+            case .other:
+                break
+            }
+        }
+        return urlRequest
+    }
     
     private func makeURL(path: String, query: [String: String]?) throws -> URL {
         guard

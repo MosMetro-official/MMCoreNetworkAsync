@@ -7,95 +7,77 @@
 
 import Foundation
 
+public struct AnyEncodable: Encodable {
+    private let value: Encodable
 
+    init(_ value: Encodable) {
+        self.value = value
+    }
 
-public protocol Request {
-    var path : String { get set }
-    var method : HTTPMethod { get set }
-    var contentType : HTTPContentType { get set }
-    var query : [String: String]? { get set }
-    func makeURLRequest(url: URL, serializer: Serializer?) async throws -> URLRequest
+    public func encode(to encoder: Encoder) throws {
+        try value.encode(to: encoder)
+    }
+}
+
+//public protocol Request {
+//    var path : String { get set }
+//    var method : HTTPMethod { get set }
+//    var contentType : HTTPContentType { get set }
+//    var query : [String: String]? { get set }
+//    func makeURLRequest(url: URL, serializer: Serializer?) async throws -> URLRequest
+//
+//}
+
+public struct Request {
+    public let path : String
+    public let method : HTTPMethod
+    public let contentType : HTTPContentType
+    public let query : [String: String]?
+    public let body: AnyEncodable?
+    
+    public init(path: String, method: HTTPMethod, contentType: HTTPContentType, query: [String: String]? = nil) {
+        self.path = path
+        self.method = method
+        self.contentType = contentType
+        self.query = query
+        self.body = nil
+    }
+    
+    public init<T: Encodable>(path: String, method: HTTPMethod, contentType: HTTPContentType, query: [String: String]? = nil, body: T?) {
+        self.path = path
+        self.method = method
+        self.contentType = contentType
+        self.query = query
+        self.body = AnyEncodable(body)
+    }
     
 }
 
 public extension Request {
+    
+    static func POST<T: Encodable>(path: String, body: T?, contentType: HTTPContentType) -> Request {
+        return Request(path: path, method: .POST, contentType: contentType, body: body)
+    }
+    
+    static func POST(path: String, contentType: HTTPContentType) -> Request {
+        return Request(path: path, method: .POST, contentType: contentType)
+    }
+    
     static func GET(path: String, query: [String:String]? = nil) -> Request {
-        return BaseRequest(
-            path: path,
-            query: query,
-            method: .GET,
-            contentType: .json
-        )
+        return Request(path: path, method: .GET, contentType: .json, query: query)
     }
     
     static func PUT(path: String, query: [String:String]? = nil) -> Request {
-        return BaseRequest(
-            path: path,
-            query: query,
-            method: .PUT,
-            contentType: .json
-        )
+        return Request(path: path, method: .PUT, contentType: .json, query: query)
     }
     
     static func DELETE(path: String, query: [String:String]? = nil) -> Request {
-        return BaseRequest(
-            path: path,
-            query: query,
-            method: .DELETE,
-            contentType: .json
-        )
+        return Request(path: path, method: .DELETE, contentType: .json, query: query)
     }
     
 }
 
-public struct BaseRequest: Request {
-    
-    public func makeURLRequest(url: URL, serializer: Serializer? = nil) throws -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = method.rawValue
-        return request
-    }
-    
-    public var path : String
-    public var query : [String: String]?
-    public var method : HTTPMethod
-    public var contentType : HTTPContentType
-    
-}
 
-
-public struct PostRequest<T: Encodable>: Request {
-    
-    public func makeURLRequest(url: URL, serializer: Serializer?) async throws -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = method.rawValue
-        if let body = body {
-            request.setValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
-            switch contentType {
-            case .json:
-                let encodedData = try await serializer?.encode(body)
-                request.httpBody = encodedData
-            case .formData:
-                break
-            case .urlEncoded:
-                let encoder = URLEncodedFormEncoder()
-                let data: Data? = try? encoder.encode(body)
-                request.httpBody = data
-                
-            case .other:
-                break
-            }
-        }
-        return request
-    }
-    
-    public var path : String
-    public var body: T?
-    public var query : [String: String]?
-    public var method : HTTPMethod = .POST
-    public var contentType : HTTPContentType
-    
-}
 
 
 

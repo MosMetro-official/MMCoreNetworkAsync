@@ -13,7 +13,7 @@ public actor Serializer {
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
     
-    init(decoder: JSONDecoder = JSONDecoder(), encoder: JSONEncoder = JSONEncoder()) {
+    public init(decoder: JSONDecoder = JSONDecoder(), encoder: JSONEncoder = JSONEncoder()) {
         self.decoder = decoder
         self.encoder = encoder
     }
