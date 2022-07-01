@@ -19,6 +19,7 @@
 		44A138082860BC4B00708B66 /* HTTPProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A137FD2860BC4B00708B66 /* HTTPProtocol.swift */; };
 		44A138092860BC4B00708B66 /* Ext+URLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A137FF2860BC4B00708B66 /* Ext+URLSession.swift */; };
 		44A1380A2860BC4B00708B66 /* Ext+Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A138002860BC4B00708B66 /* Ext+Dictionary.swift */; };
+		D891104B286ED7B8004BA214 /* Ext+URLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D891104A286ED7B7004BA214 /* Ext+URLRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,6 +48,7 @@
 		44A137FD2860BC4B00708B66 /* HTTPProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPProtocol.swift; sourceTree = "<group>"; };
 		44A137FF2860BC4B00708B66 /* Ext+URLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Ext+URLSession.swift"; sourceTree = "<group>"; };
 		44A138002860BC4B00708B66 /* Ext+Dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Ext+Dictionary.swift"; sourceTree = "<group>"; };
+		D891104A286ED7B7004BA214 /* Ext+URLRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+URLRequest.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,7 @@
 			children = (
 				44A137FF2860BC4B00708B66 /* Ext+URLSession.swift */,
 				44A138002860BC4B00708B66 /* Ext+Dictionary.swift */,
+				D891104A286ED7B7004BA214 /* Ext+URLRequest.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -178,6 +181,7 @@
 				44A138082860BC4B00708B66 /* HTTPProtocol.swift in Sources */,
 				449B79A32864A66300FA7839 /* URLEncodedFromEncoder.swift in Sources */,
 				44A138042860BC4B00708B66 /* APIClientDelegate.swift in Sources */,
+				D891104B286ED7B8004BA214 /* Ext+URLRequest.swift in Sources */,
 				44A138092860BC4B00708B66 /* Ext+URLSession.swift in Sources */,
 				44A1380A2860BC4B00708B66 /* Ext+Dictionary.swift in Sources */,
 				44A138062860BC4B00708B66 /* Response.swift in Sources */,

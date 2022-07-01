@@ -13,20 +13,22 @@ public actor APIClient {
     internal let interceptor : APIClientInterceptor
     internal let httpProtocol : HTTPProtocol
     internal let serializer: Serializer?
-    public var debug = false
+    internal let debug: Bool
     
     public init(
         host: String,
         interceptor: APIClientInterceptor? = nil,
         httpProtocol: HTTPProtocol = .HTTPS,
         configuration: URLSessionConfiguration = .default,
-        serializer: Serializer? = nil
+        serializer: Serializer? = nil,
+        debug: Bool = false
     ) {
         self.host = host
         self.session = URLSession(configuration: configuration)
         self.interceptor = interceptor ?? DefaultAPIClientInterceptor()
         self.httpProtocol = httpProtocol
         self.serializer = serializer
+        self.debug = debug
     }
     
     @discardableResult
@@ -54,7 +56,9 @@ public actor APIClient {
         }
         interceptor.client(self, willSendRequest: &urlRequest)
         print("CORENETWORK: started network call")
-        
+        if debug {
+            print(urlRequest.cURL(pretty: true))
+        }
         let (data,response) = try await session.data(from: urlRequest)
         
         guard let httpResponse = response as? HTTPURLResponse else {
