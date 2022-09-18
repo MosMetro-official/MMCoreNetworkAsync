@@ -1,10 +1,10 @@
 Pod::Spec.new do |spec|
   
-    spec.name         = "MMCoreNetworkAsyncPackage"
+    spec.name         = "MMCoreNetworkAsync"
     spec.version      = "0.0.1"
     spec.summary      = "A short description"
   
-    spec.homepage     = "https://github.com/MosMetro-official/MMCoreNetworkAsyncPackage"
+    spec.homepage     = "https://github.com/MosMetro-official/MMCoreNetworkAsync"
   
     spec.license      = "MIT"
   
@@ -15,8 +15,8 @@ Pod::Spec.new do |spec|
   
     spec.ios.deployment_target = "13.0"
   
-    spec.source       = { :git => "https://github.com/MosMetro-official/MMCoreNetworkAsyncPackage.git" }
+    spec.source       = { :git => "https://github.com/MosMetro-official/MMCoreNetworkAsync.git" }
   
-    spec.source_files  = "Sources/MMCoreNetworkAsyncPackage/**/*.{swift}"
+    spec.source_files  = "Sources/MMCoreNetworkAsync/**/*.{swift}"
     
   end
