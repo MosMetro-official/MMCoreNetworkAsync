@@ -1,4 +1,4 @@
-public struct MMCoreNetworkAsyncPackage {
+public struct MMCoreNetworkAsync {
     public private(set) var text = "Hello, World!"
 
     public init() {
