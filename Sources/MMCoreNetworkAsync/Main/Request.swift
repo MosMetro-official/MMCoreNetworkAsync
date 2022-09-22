@@ -63,6 +63,14 @@ public extension Request {
         return Request(path: path, method: .POST, contentType: contentType)
     }
     
+    static func PATCH<T: Encodable>(path: String, body: T?, contentType: HTTPContentType) -> Request {
+        return Request(path: path, method: .PATCH, contentType: contentType, body: body)
+    }
+    
+    static func PATCH(path: String, contentType: HTTPContentType) -> Request {
+        return Request(path: path, method: .PATCH, contentType: contentType)
+    }
+    
     static func GET(path: String, query: [String:String]? = nil) -> Request {
         return Request(path: path, method: .GET, contentType: .json, query: query)
     }
